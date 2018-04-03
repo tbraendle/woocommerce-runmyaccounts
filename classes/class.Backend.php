@@ -1,7 +1,4 @@
 <?php
-
-require_once 'class.BackendAbstract.php';
-
 /**
  * class.Backend.php  
  *  
@@ -11,6 +8,11 @@ require_once 'class.BackendAbstract.php';
  * @package     WooCommerce Run My Account
  * @since       1.0  
  */
+
+if (!defined('ABSPATH')) { exit; }
+
+require_once 'class.BackendAbstract.php';
+
 if (!class_exists('WC_RMA_BACKEND')) {
 
     /**

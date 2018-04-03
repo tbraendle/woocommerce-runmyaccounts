@@ -1,4 +1,6 @@
 <?php
+if (!defined('ABSPATH')) { exit; }
+
 $settings = get_option('wc_rma_settings');
 if (class_exists('WC_RMA_API')) $WC_RMA_API = new WC_RMA_API();
 

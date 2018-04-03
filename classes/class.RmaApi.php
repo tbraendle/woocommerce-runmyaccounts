@@ -1,4 +1,6 @@
 <?php
+if (!defined('ABSPATH')) { exit; }
+
 if (!class_exists('WC_RMA_API')) {
 
 	class WC_RMA_API {

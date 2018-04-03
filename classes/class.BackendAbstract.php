@@ -1,5 +1,4 @@
 <?php
-
 /**
  * class.BackendAbstract.php 
  * 
@@ -9,6 +8,9 @@
  * @package     WooCommerce Run My Account
  * @since       1.0  
  */
+
+if (!defined('ABSPATH')) { exit; }
+
 if (!class_exists('WC_RMA_BACKEND_ABSTRACT')) {
 
     abstract class WC_RMA_BACKEND_ABSTRACT {
