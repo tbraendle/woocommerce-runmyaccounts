@@ -12,13 +12,53 @@ if (!class_exists('WC_RMA_API')) {
 
 			// read rma settings
 			$rmasettings = get_option('wc_rma_settings');
-			if(isset($rmasettings['rma-client'])) { DEFINE('MADANT', $rmasettings['rma-client']); } else {DEFINE('MADANT', '');}
-			if(isset($rmasettings['rma-apikey'])) { DEFINE('APIKEY', $rmasettings['rma-apikey']); } else {DEFINE('APIKEY', '');}
-			if(isset($rmasettings['rma-invoice-description'])) { DEFINE('DESCRIPTION', $rmasettings['rma-invoice-description']); } else {DEFINE('DESCRIPTION', '');}
-			if(isset($rmasettings['rma-sandbox'])) { DEFINE('CALLERSANDBOX', TRUE); } else {DEFINE('CALLERSANDBOX', FALSE);}
-			if(isset($rmasettings['rma-payment-period'])) { DEFINE('GLOBALPAYMENTPERIOD', $rmasettings['rma-payment-period']); } else {DEFINE('GLOBALPAYMENTPERIOD', '0');} // default set zu 0 days
+
+			// if rma-mode ist not set, operation mode is test by default
+			if( isset($rmasettings['rma-mode'] ) ) {
+				if( $rmasettings['rma-mode'] == 'live' ) {
+					if(isset($rmasettings['rma-live-client'])) { DEFINE( 'MANDANT', $rmasettings['rma-live-client']); } else { DEFINE('MANDANT', '');}
+					if(isset($rmasettings['rma-live-apikey'])) { DEFINE( 'APIKEY', $rmasettings['rma-live-apikey']); } else { DEFINE('APIKEY', '');}
+					DEFINE( 'CALLERSANDBOX' , FALSE );
+				} elseif ( $rmasettings['rma-mode'] == 'test' ) {
+					if(isset($rmasettings['rma-test-client'])) { DEFINE( 'MANDANT', $rmasettings['rma-test-client']); } else { DEFINE('MANDANT', '');}
+					if(isset($rmasettings['rma-test-apikey'])) { DEFINE( 'APIKEY', $rmasettings['rma-test-apikey']); } else { DEFINE('APIKEY', '');}
+					DEFINE( 'CALLERSANDBOX' , TRUE );
+				} else {
+					DEFINE( 'MANDANT', '' );
+					DEFINE( 'APIKEY', '' );
+					DEFINE( 'CALLERSANDBOX' , TRUE );
+				}
+			} else {
+				if(isset($rmasettings['rma-test-client'])) { DEFINE('MANDANT', $rmasettings['rma-test-client']); } else {DEFINE('MANDANT', '');}
+				if(isset($rmasettings['rma-test-apikey'])) { DEFINE('APIKEY', $rmasettings['rma-test-apikey']); } else {DEFINE('APIKEY', '');}
+			}
+			if( isset( $rmasettings['rma-invoice-description'] ) ) { DEFINE( 'DESCRIPTION', $rmasettings['rma-invoice-description'] ); } else { DEFINE('DESCRIPTION', '' );}
+			if( isset( $rmasettings['rma-payment-period'] ) ) { DEFINE( 'GLOBALPAYMENTPERIOD', $rmasettings['rma-payment-period'] ); } else { DEFINE( 'GLOBALPAYMENTPERIOD', '0' );} // default set zu 0 days
 			if(isset($rmasettings['rma-invoice-prefix'])) { DEFINE('INVPREFIX', $rmasettings['rma-invoice-prefix']); } else {DEFINE('INVPREFIX', '');}
 			if(isset($rmasettings['rma-digits'])) { DEFINE('INVDIGITS', $rmasettings['rma-digits']); } else {DEFINE('INVDIGITS', '');}
+
+			// if rma-loglevel ist not set, LOGLEVEL is set to error by default
+			if( isset($rmasettings['rma-loglevel'] ) ) {
+				if( 'error' == $rmasettings['rma-loglevel']  || empty( $rmasettings['rma-loglevel'] ) ) {
+					DEFINE( 'LOGLEVEL' , 'error' );
+				} elseif ( $rmasettings['rma-loglevel'] == 'complete' ) {
+					DEFINE( 'LOGLEVEL' , 'complete' );
+				}
+			} else {
+				DEFINE( 'LOGLEVEL' , 'error' );
+			}
+
+			// if rma-logemail ist not set, LOGEMAIL is set to false by default
+			if( isset($rmasettings['rma-logemail'] ) ) {
+				if( 'no' == $rmasettings['rma-logemail']  || empty( $rmasettings['rma-logemail'] ) ) {
+					DEFINE( 'LOGEMAIL' , false );
+				} elseif ( $rmasettings['rma-logemail'] == 'yes' ) {
+					DEFINE( 'LOGEMAIL' , true );
+				}
+			} else {
+				DEFINE( 'LOGEMAIL' , false );
+			}
+
 		}
 
 		/**
@@ -41,19 +81,24 @@ if (!class_exists('WC_RMA_API')) {
 		 * @return mixed
 		 */
 		public function get_customers() {
-			$callerUrlCustomer = $this->get_callerUrl() . MADANT . '/customers?api_key=' . APIKEY;
+			$callerUrlCustomer = $this->get_callerUrl() . MANDANT . '/customers?api_key=' . APIKEY;
 
 			// Read response file
-			if (($response_xml_data = file_get_contents($callerUrlCustomer))===false){
-				echo "Error fetching XML\n";
+			if ( false === ($response_xml_data = @file_get_contents($callerUrlCustomer) ) ){
+
+				return false;
+
 			} else {
 				libxml_use_internal_errors(true);
 				$data = simplexml_load_string($response_xml_data, 'SimpleXMLElement', LIBXML_NOCDATA);
 				if (!$data) {
-					echo "Error loading XML\n";
+					// ToDO: Add this information to error log
 					foreach(libxml_get_errors() as $error) {
 						echo "\t", $error->message;
 					}
+
+					return false;
+
 				} else {
 					// Parse response
 					$array = json_decode(json_encode((array)$data), TRUE);
@@ -61,7 +106,7 @@ if (!class_exists('WC_RMA_API')) {
 					// Transform into array
 					foreach ($array as $value) {
 						foreach ($value as $key => $customer ) {
-							$customers[$customer['customernumber']] = $customer['name'];
+							$customers[$customer['customernumber']] = $customer['name'] . ' ( ' . $customer['customernumber'] . ')';
 						}
 					}
 
@@ -75,7 +120,7 @@ if (!class_exists('WC_RMA_API')) {
 		 * @return mixed
 		 */
 		public function get_parts() {
-			$callerUrlParts = $this->get_callerUrl() . MADANT . '/parts?api_key=' . APIKEY;
+			$callerUrlParts = $this->get_callerUrl() . MANDANT . '/parts?api_key=' . APIKEY;
 
 			// Read response file
 			if (($response_xml_data = file_get_contents($callerUrlParts))===false){
@@ -110,7 +155,6 @@ if (!class_exists('WC_RMA_API')) {
 		 * Create data for invoice
 		 *
 		 * @param $orderID
-		 *
 		 * @return array
 		 */
 		private function get_invoice_data($orderID) {
@@ -201,13 +245,27 @@ if (!class_exists('WC_RMA_API')) {
 
 			$rmasettings = get_option('wc_rma_settings');
 			$rmaactive = ( isset($rmasettings['rma-active']) ? $rmasettings['rma-active'] : '');
+			$rmaMode = CALLERSANDBOX ? 'Test' : 'Live' ;
+
+			if ( !$rmaactive && 'complete' == LOGLEVEL ) {
+
+				$logvalues = array(
+					'status' => 'deactivated',
+					'orderid' => $orderID,
+					'mode' => $rmaMode,
+					'message' => __('Plugin was not activated','wc-rma','Log') );
+
+				$this->writeLog($logvalues);
+				if ( LOGEMAIL ) $this->sendLogEmail($logvalues);
+			}
+
 
 			// Continue only if an orderID is available or plugin function is activated
 			if( !$orderID || !$rmaactive ) return false;
 
 			$data = $this->get_invoice_data($orderID);
 
-			$callerUrlInvoice = $this->get_callerUrl() . MADANT . '/invoices?api_key=' . APIKEY;
+			$callerUrlInvoice = $this->get_callerUrl() . MANDANT . '/invoices?api_key=' . APIKEY;
 
 			//create the xml document
 			$xmlDoc = new DOMDocument('1.0', 'UTF-8');
@@ -250,12 +308,72 @@ if (!class_exists('WC_RMA_API')) {
 			curl_close($ch);
 
 			// $response !empty => errors
-			if($response) {
-				//ToDo: Write error in log
+			$status = ( ( empty($response) ) ? 'invoiced' : 'error' );
+
+			if ( ( 'error' == LOGLEVEL && 'error' == $status ) || 'complete' == LOGLEVEL ) {
+
+				$logvalues = array(
+					'status' => $status,
+					'orderid' => $orderID,
+					'mode' => $rmaMode,
+					'message' => $response );
+				$this->writeLog($logvalues);
+
+				if ( 'error' == $status && LOGEMAIL ) $this->sendLogEmail($logvalues);
+
 			}
 
 			return $response;
 		}
+
+		/**
+		 *
+		 * Write Log in DB
+		 *
+		 * @param $values
+		 *
+		 * @return bool
+		 */
+		public function writeLog(&$values) {
+			global $wpdb;
+
+			$tablename = $wpdb->prefix . WC_RMA_LOG_TABLE;
+
+			$wpdb->insert( $tablename,
+				array(
+					'time' => current_time( 'mysql' ),
+					'status' => $values['status'],
+					'orderid' => $values['orderid'],
+					'mode' => $values['mode'],
+					'message' => $values['message']
+				)
+			);
+
+			return true;
+		}
+
+		/**
+		 *
+		 * Send error log by email
+		 *
+		 * @param $values
+		 *
+		 * @return bool
+		 */
+		public function sendLogEmail(&$values) {
+			// ToDo: send email out
+			/*
+							array(
+								'time' => current_time( 'mysql' ),
+								'status' => $values['status'],
+								'orderid' => $values['orderid'],
+								'mode' => $values['mode'],
+								'message' => $values['message']
+							)
+			*/
+			return true;
+		}
+
 
 	}
 }

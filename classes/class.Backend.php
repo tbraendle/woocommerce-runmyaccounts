@@ -30,6 +30,7 @@ if (!class_exists('WC_RMA_BACKEND')) {
             add_action('admin_init', array($this, 'admin_init')); // admin_init diese action wird benötigt um z.B. option, settings und filter zusetzen  
             add_action('plugins_loaded', array($this, 'plugins_loaded')); // plugins_loaded diese action wird bei jedem aufruf der Seite ausgeführt
             add_action('plugins_loaded', array($this, 'plugins_loaded_about'), 1); // plugins_loaded diese action begrenzen wir auf ein einmaligen aufruf, der hier beim aktivieren des plugins genutzt wird
+
         }
 
         /**
@@ -53,6 +54,15 @@ if (!class_exists('WC_RMA_BACKEND')) {
 
             //..  
         }
+
+	    /**
+	     * Uninstall - will call by register_uninstall_hook(), but we do it already in wc-rma.php
+	     */
+	    public function uninstall() {
+
+		    $this->delete(); // Delete
+
+	    }
 
         /**
          * Admin Menus - Dies ist nun die admin_menu action und die funktion, die funktion hätte auch anders benannt werden können,  

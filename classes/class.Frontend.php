@@ -89,8 +89,8 @@ if (!class_exists('WC_RMA_FRONTEND')) {
         public function admin_notices() {
 
 	        $rmasettings = get_option('wc_rma_settings');
-	        $rmaclient = ( isset ($rmasettings['rma-client']) ? $rmasettings['rma-client'] : '');
-	        $rmaapikey = ( isset ($rmasettings['rma-apikey']) ? $rmasettings['rma-apikey'] : '');
+	        $rmaclient = ( isset ($rmasettings['rma-live-client']) ? $rmasettings['rma-live-client'] : '');
+	        $rmaapikey = ( isset ($rmasettings['rma-live-apikey']) ? $rmasettings['rma-live-apikey'] : '');
 
 	        if( (!$rmaclient || !$rmaapikey ) ) {
 

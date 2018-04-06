@@ -15,8 +15,13 @@ if (!class_exists('WC_RMA_BACKEND_ABSTRACT')) {
 
     abstract class WC_RMA_BACKEND_ABSTRACT {
 
-        const VERSION = '1.0';
-        const DB_VERSION = '1.0';
+        const VERSION = '1.1.0';
+        const DB_VERSION = '1.0.0';
+
+	    private static function _table_log() {
+		    global $wpdb;
+		    return $wpdb->prefix . WC_RMA_LOG_TABLE;
+	    }
 
         public function create() {
 
@@ -24,7 +29,26 @@ if (!class_exists('WC_RMA_BACKEND_ABSTRACT')) {
              * Create Custom Table
              * https://codex.wordpress.org/Creating_Tables_with_Plugins
              */
-            // ToDo: Add custom tables for log data
+
+	        global $wpdb;
+
+	        if ($wpdb->get_var("SHOW TABLES LIKE '".self::_table_log()."'") != self::_table_log()) {
+
+		        $charset_collate = $wpdb->get_charset_collate();
+
+		        $sql = 'CREATE TABLE ' . self::_table_log() . ' (
+                    id mediumint(9) NOT NULL AUTO_INCREMENT,
+                    time datetime DEFAULT "0000-00-00 00:00:00" NOT NULL,
+                    status text NOT NULL,
+                    orderid text NOT NULL, 
+                    mode text NOT NULL,
+                    message text NOT NULL, 
+                    UNIQUE KEY id (id) ) ' . $charset_collate . ';';
+
+		        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+		        dbDelta($sql);
+	        }
+
         }
 
         /**
@@ -36,9 +60,9 @@ if (!class_exists('WC_RMA_BACKEND_ABSTRACT')) {
              * get_option() WP Since: 1.5.0
              * https://codex.wordpress.org/Function_Reference/get_option
              */
-            if (self::DB_VERSION > get_option('wc_rma_db_version')) { // Wenn du oben in der Konstante die DB version erhöhst findet beim aktualiseiren, aktivieren ein update statt
+            if (self::DB_VERSION > get_option('wc_rma_db_version')) { // update option if value is different
 
-                // Hier kannst du beim erhöhen der DB version deine Datenbanktabelle updaten
+                // database update if necessary
                 /**
                  * update_option() WP Since: 1.0.0
                  * https://codex.wordpress.org/Function_Reference/update_option
@@ -46,12 +70,28 @@ if (!class_exists('WC_RMA_BACKEND_ABSTRACT')) {
                 update_option("wc_rma_db_version", self::DB_VERSION);
             }
 
-            if (self::VERSION > get_option('wc_rma_version')) { // Wenn du oben in der Konstante die version erhöhst findet beim aktualiseiren, aktivieren ein update statt
-                
-                // Hier kannst du beim erhöhen der version andere sachen machen
+            if (self::VERSION > get_option('wc_rma_version')) { // update option if value is different
+
                 update_option("wc_rma_version", self::VERSION);
+
+	            // do necessary stuff for a version update
             }
         }
+
+	    public function delete() {
+		    $settings = get_option('wc_rma_settings'); // get settings
+		    if ( 'yes' == $settings['rma-delete-settings'] ) {
+			    global $wpdb;
+
+			    // drop table
+			    $wpdb->query('DROP TABLE IF EXISTS ' . self::_table_log() . ';');
+
+			    // clean all option
+			    delete_option('wc_rma_db_version');
+			    delete_option('wc_rma_version');
+			    delete_option('wc_rma_settings');
+		    }
+	    }
 
         /**
          * Hier kannst du alle deine vorhandenen bzw. benötigten option schon anlegen
@@ -78,7 +118,6 @@ if (!class_exists('WC_RMA_BACKEND_ABSTRACT')) {
 		        add_filter( 'woocommerce_customer_meta_fields', array( $this, 'profile_rma_fields' ), 10, 1 );
 	        }
         }
-
 
         /**
          * 
@@ -124,7 +163,6 @@ if (!class_exists('WC_RMA_BACKEND_ABSTRACT')) {
 	     * Add RMA fields to user profile
 	     *
 	     * @param $fields
-	     *
 	     * @return mixed
 	     */
 	    public function profile_rma_fields( $fields ) {
@@ -134,7 +172,20 @@ if (!class_exists('WC_RMA_BACKEND_ABSTRACT')) {
 		    if (class_exists('WC_RMA_API')) $WC_RMA_API = new WC_RMA_API();
 
 		    $options = $WC_RMA_API->get_customers();
-		    $options = array('' => __( 'Please select a RMA customer.', 'wc-rma' )) + $options;
+
+		    if( !$options ) {
+
+			    $fields[ 'rma' ][ 'fields' ][ 'rma_customer' ] = array(
+				    'label'       => __( 'Customer', 'wc-rma' ),
+				    'type'		  => 'select',
+				    'options'	  => array('' => __( 'Error while connecting to RMA. Please check your settings.', 'wc-rma' )),
+				    'description' => __( 'Select the corresponding RMA customer for this account.', 'wc-rma' )
+			    );
+
+			    return $fields;
+		    }
+
+		    $options = array('' => __( 'Select customer...', 'wc-rma' )) + $options;
 
 		    $fields[ 'rma' ][ 'fields' ][ 'rma_customer' ] = array(
 			    'label'       => __( 'Customer', 'wc-rma' ),
@@ -156,7 +207,6 @@ if (!class_exists('WC_RMA_BACKEND_ABSTRACT')) {
 			    'type'		  => 'input',
 			    'description' => __( 'How many days has this customer to pay your invoice?', 'wc-rma' )
 		    );
-
 		    return $fields;
 	    }
 

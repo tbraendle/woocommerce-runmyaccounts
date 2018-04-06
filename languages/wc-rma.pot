@@ -1,0 +1,230 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce RMA\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-04-06 08:03+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/"
+
+#. $page_title
+#: classes/class.Backend.php:79
+msgid "Run My Accounts"
+msgstr ""
+
+#: classes/class.BackendAbstract.php:170
+msgid "Settings Run My Account"
+msgstr ""
+
+#: classes/class.BackendAbstract.php:179 classes/class.BackendAbstract.php:191
+msgid "Customer"
+msgstr ""
+
+#: classes/class.BackendAbstract.php:181
+msgid "Error while connecting to RMA. Please check your settings."
+msgstr ""
+
+#: classes/class.BackendAbstract.php:182 classes/class.BackendAbstract.php:194
+msgid "Select the corresponding RMA customer for this account."
+msgstr ""
+
+#: classes/class.BackendAbstract.php:188
+msgid "Select customer..."
+msgstr ""
+
+#: classes/class.BackendAbstract.php:200
+msgid "Receivables Account"
+msgstr ""
+
+#: classes/class.BackendAbstract.php:202
+msgid ""
+"The receivables account has to be available in RMA. Leave it blank to use "
+"default value 1100."
+msgstr ""
+
+#: classes/class.BackendAbstract.php:206
+msgid "Payment Period"
+msgstr ""
+
+#: classes/class.BackendAbstract.php:208
+msgid "How many days has this customer to pay your invoice?"
+msgstr ""
+
+#: classes/class.Frontend.php:99
+msgid "Warning"
+msgstr ""
+
+#: classes/class.Frontend.php:100
+msgid ""
+"Please add your Mandant and API Key before you start using WooCommerce Run "
+"My Account."
+msgstr ""
+
+#: classes/class.Frontend.php:111
+msgid ""
+"WooCommerce Run My Account is not activated. No invoice will be created."
+msgstr ""
+
+#: classes/class.RmaApi.php:256
+msgid "Plugin was not activated"
+msgstr ""
+
+#: html/settings.php:9
+msgid "Run My Accounts - Settings"
+msgstr ""
+
+#: html/settings.php:12
+msgid "Connection settings"
+msgstr ""
+
+#: html/settings.php:15 html/settings.php:18
+msgid "Active"
+msgstr ""
+
+#: html/settings.php:20
+msgid "Do not activate the plugin before you have set up all data."
+msgstr ""
+
+#: html/settings.php:26
+msgid "Operation Mode"
+msgstr ""
+
+#: html/settings.php:29
+msgid "Test Mode"
+msgstr ""
+
+#: html/settings.php:30
+msgid "Live Mode"
+msgstr ""
+
+#: html/settings.php:34
+msgid "No connection. Please check your settings."
+msgstr ""
+
+#: html/settings.php:35
+msgid "Connection successful."
+msgstr ""
+
+#: html/settings.php:37
+msgid ""
+"If the test mode is selected the test client is used and the test API key."
+msgstr ""
+
+#: html/settings.php:41
+msgid "Live Client"
+msgstr ""
+
+#: html/settings.php:45
+msgid "Live API key"
+msgstr ""
+
+#: html/settings.php:49
+msgid "Test Client"
+msgstr ""
+
+#: html/settings.php:53
+msgid "Test API key"
+msgstr ""
+
+#: html/settings.php:57
+msgid "Invoice settings"
+msgstr ""
+
+#: html/settings.php:60
+msgid "Payment Period in days"
+msgstr ""
+
+#: html/settings.php:62
+msgid "day(s)"
+msgstr ""
+
+#: html/settings.php:63
+msgid ""
+"Please set the general payment period. You can set a individual value, for a "
+"customer, in the user profile."
+msgstr ""
+
+#: html/settings.php:66
+msgid "Invoice Prefix"
+msgstr ""
+
+#: html/settings.php:69
+msgid ""
+"Prefix followed by order number will be the invoice number in Run My Account."
+msgstr ""
+
+#: html/settings.php:73
+msgid "Number of digits"
+msgstr ""
+
+#: html/settings.php:76
+msgid ""
+"Set the maximum number of digits for the invoice number (including prefix)."
+msgstr ""
+
+#: html/settings.php:81
+msgid "Invoice Description in RMA"
+msgstr ""
+
+#: html/settings.php:84
+msgid "Possible variable: [orderdate]"
+msgstr ""
+
+#: html/settings.php:87
+msgid "Plugin settings"
+msgstr ""
+
+#: html/settings.php:90
+msgid "Log Level"
+msgstr ""
+
+#: html/settings.php:94
+msgid "complete"
+msgstr ""
+
+#: html/settings.php:95
+msgid "error"
+msgstr ""
+
+#: html/settings.php:113
+msgid ""
+"Remove all plugin data when using the \"Delete\" link on the plugins screen"
+msgstr ""
+
+#: html/settings.php:116
+msgid "no"
+msgstr ""
+
+#: html/settings.php:117
+msgid "yes"
+msgstr ""
+
+#: html/settings.php:122
+msgid "Save Changes"
+msgstr ""
+
+#. Name of the plugin
+msgid "WooCommerce RMA"
+msgstr ""
+
+#. Description of the plugin
+msgid ""
+"This plug-in connect WooCommerce to <a href=\"https://www.runmyaccounts."
+"ch/\">Run My Accounts</a>"
+msgstr ""
+
+#. URI of the plugin
+#. Author URI of the plugin
+msgid "https://www.openstream.ch"
+msgstr ""
+
+#. Author of the plugin
+msgid "Openstream Internet Solutions"
+msgstr ""

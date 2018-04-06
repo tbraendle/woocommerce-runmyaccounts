@@ -16,4 +16,14 @@ Upload the files to your server and put it in your folder /plugins/.
 Activate the plugin, enter the API key and check the settings page.
 
 == Changelog ==
-Version 1.0 is the initial version with basic features.
+
+= 1.1 =
+* added new log feature for RMA results
+* include connection test on settings page
+* added handling for different access data for live and test
+* improved error handling
+* security of files improved
+* German and German (formal) translation
+
+= 1.0 =
+version 1.0 is the initial version with basic features.
