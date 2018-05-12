@@ -6,7 +6,7 @@ if (class_exists('WC_RMA_API')) $WC_RMA_API = new WC_RMA_API();
 
 ?>
 <div class="wrap">
-    <h2><?php _e('Run My Accounts - Settings', 'wc-rma'); ?></h2>
+    <h2><?php _e('Run my Accounts - Settings', 'wc-rma'); ?></h2>
     <form method="post" action="options.php">
         <?php settings_fields('wc_rma_settings_group'); ?>
         <h2><?php _e('Connection settings', 'wc-rma'); ?></h2>
@@ -66,7 +66,7 @@ if (class_exists('WC_RMA_API')) $WC_RMA_API = new WC_RMA_API();
                 <th scope="row" class="titledesc"><label for="rma-invoice-prefix"><?php _e('Invoice Prefix', 'wc-rma'); ?></label></th>
                 <td class="forminp forminp-text">
                     <input type="number" name="wc_rma_settings[rma-invoice-prefix]" id="rma-invoice-prefix" value="<?php echo ((isset($settings['rma-invoice-prefix'])) ? $settings['rma-invoice-prefix'] : '' ); ?>" />
-                    <p class="description"><?php _e('Prefix followed by order number will be the invoice number in Run My Account.', 'wc-rma'); ?></p>
+                    <p class="description"><?php _e('Prefix followed by order number will be the invoice number in Run my Accounts.', 'wc-rma'); ?></p>
                 </td>
             </tr>
             <tr valign="top">
